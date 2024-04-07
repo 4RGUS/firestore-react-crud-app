@@ -7,16 +7,31 @@ import Add from './Add';
 import Edit from './Edit';
 
 import { employeesData } from '../../data';
-import {collection, getDocs} from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
+import {db} from '../../config/firestore'
 
 const Dashboard = ({ setIsAuthenticated }) => {
-  const [employees, setEmployees] = useState(employeesData);
+  const [employees, setEmployees] = useState();
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+
+  const getEmployees = async() => {
+
+    const querySnapshot = await getDocs(collection(db, "employees"));
+    const employees = querySnapshot.docs.map(doc => ({id:doc.id, ...doc.data()}))
+    querySnapshot.forEach((doc) => {
+      // doc.data() is never undefined for query doc snapshots
+      console.log(doc.id, " => ", doc.data());
+    });
+    setEmployees(employees);
+    
+  }
+
   useEffect(() => {
     // TODO: create getEmployees function and call it here
+    getEmployees();
   }, []);
 
   const handleEdit = id => {
