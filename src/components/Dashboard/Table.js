@@ -1,42 +1,60 @@
 import React from 'react';
+import { formatDate } from '../../utils/formatDate';
 
-const Table = ({ employees, handleEdit, handleDelete }) => {
+const Table = ({ expenses, handleEdit, handleDelete }) => {
+const abc = {
+    "id": "UVBYvnlwZStJHbEsOvlE",
+    "remarks": "",
+    "paid_date": {
+        "seconds": 1704133800,
+        "nanoseconds": 474000000
+    },
+    "amount_paid": 7115.99,
+    "last_date": {
+        "seconds": 1704393000,
+        "nanoseconds": 526000000
+    },
+    "expense_name": "Slice",
+    "amount": 7115.99
+}
 
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: null,
-  });
+  const formatNumber = (number) => {
+    number.toLocaleString('en-IN', {
+      maximumFractionDigits: 2,
+      style: 'currency',
+      currency: 'INR'
+    })
+  }
 
   return (
     <div className="contain-table">
       <table className="striped-table">
         <thead>
           <tr>
-            <th>Id</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Salary</th>
-            <th>Date</th>
+            <th>Expense name</th>
+            <th>Amount</th>
+            <th>Paid amount</th>
+            <th>Last date</th>
+            <th>Paid date</th>
+            <th>comments</th>
             <th colSpan={2} className="text-center">
               Actions
             </th>
           </tr>
         </thead>
         <tbody>
-          {employees ? (
-            employees.map((employee, i) => (
-              <tr key={employee.id}>
-                <td>{employee.id}</td>
-                <td>{employee.firstName}</td>
-                <td>{employee.lastName}</td>
-                <td>{employee.email}</td>
-                <td>{formatter.format(employee.salary)}</td>
-                <td>{employee.date} </td>
+          {expenses ? (
+            expenses.map((expense, i) => (
+              <tr key={expense.id}>
+                <td>{expense.expense_name}</td>
+                <td>{expense.amount}</td>
+                <td>{expense.amount_paid}</td>
+                <td>{formatDate(expense.last_date)}</td>
+                <td>{formatDate(expense.paid_date)}</td>
+                <td>{expense.remarks} </td>
                 <td className="text-right">
                   <button
-                    onClick={() => handleEdit(employee.id)}
+                    onClick={() => handleEdit(expense.id)}
                     className="button muted-button"
                   >
                     Edit
@@ -44,7 +62,7 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
                 </td>
                 <td className="text-left">
                   <button
-                    onClick={() => handleDelete(employee.id)}
+                    onClick={() => handleDelete(expense.id)}
                     className="button muted-button"
                   >
                     Delete
@@ -54,7 +72,7 @@ const Table = ({ employees, handleEdit, handleDelete }) => {
             ))
           ) : (
             <tr>
-              <td colSpan={7}>No Employees</td>
+              <td colSpan={7}>No expenses</td>
             </tr>
           )}
         </tbody>
