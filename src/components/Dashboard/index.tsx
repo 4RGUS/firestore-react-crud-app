@@ -6,8 +6,9 @@ import Table from './Table';
 import Add from './Add';
 import Edit from './Edit';
 
-import { getExpenseHandle } from '../../config/firestore'
+import { deleteExpenseHandle, getExpenseHandle } from '../../config/firestore'
 import { Expense } from './types';
+import { COLLECTION_NAME } from '../../constants';
 
 
 const Dashboard = ({ setIsAuthenticated }: { setIsAuthenticated: (value: boolean) => void }) => {
@@ -57,18 +58,18 @@ const Dashboard = ({ setIsAuthenticated }: { setIsAuthenticated: (value: boolean
       if (result.value && expenses) {
         const [expense] = expenses.filter(expense => expense.id === id);
 
-        // TODO delete document
+        deleteExpenseHandle(COLLECTION_NAME, expense.id).then(async()=>{
+          Swal.fire({
+            icon: 'success',
+            title: 'Deleted!',
+            text: `${expense.expense_name} has been deleted.`,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+  
+        await getExpenses()
+        })
 
-        Swal.fire({
-          icon: 'success',
-          title: 'Deleted!',
-          text: `${expense.expense_name} has been deleted.`,
-          showConfirmButton: false,
-          timer: 1500,
-        });
-
-        const expenseCopy = expenses.filter(expense => expense.id !== id);
-        setExpenses(expenseCopy);
       }
     });
   };
@@ -91,6 +92,7 @@ const Dashboard = ({ setIsAuthenticated }: { setIsAuthenticated: (value: boolean
       {isAdding && (
         <Add
           setIsAdding={handleSetIsAdding}
+          getExpenses={getExpenses}
         />
       )}
       {isEditing && (

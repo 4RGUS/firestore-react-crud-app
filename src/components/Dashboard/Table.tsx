@@ -1,30 +1,14 @@
 import React from 'react';
 import { formatDate } from '../../utils/formatDate';
+import { Expense } from './types';
 
-const Table = ({ expenses, handleEdit, handleDelete }) => {
-const abc = {
-    "id": "UVBYvnlwZStJHbEsOvlE",
-    "remarks": "",
-    "paid_date": {
-        "seconds": 1704133800,
-        "nanoseconds": 474000000
-    },
-    "amount_paid": 7115.99,
-    "last_date": {
-        "seconds": 1704393000,
-        "nanoseconds": 526000000
-    },
-    "expense_name": "Slice",
-    "amount": 7115.99
+type TableProp = {
+  expenses: Expense[] | undefined;
+  handleEdit: (id: string) => void;
+  handleDelete: (id: string) => void;
 }
 
-  const formatNumber = (number) => {
-    number.toLocaleString('en-IN', {
-      maximumFractionDigits: 2,
-      style: 'currency',
-      currency: 'INR'
-    })
-  }
+const Table = ({ expenses, handleEdit, handleDelete }: TableProp) => {
 
   return (
     <div className="contain-table">

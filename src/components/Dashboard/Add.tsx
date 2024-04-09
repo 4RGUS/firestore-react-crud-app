@@ -8,9 +8,10 @@ import { COLLECTION_NAME } from '../../constants';
 
 type AddProps = {
   setIsAdding: (value: boolean) => void;
+  getExpenses:  () => Promise<void>
 }
 
-const Add = ({ setIsAdding }: AddProps) => {
+const Add = ({ setIsAdding, getExpenses }: AddProps) => {
   const [expenseName, setExpenseName] = useState('');
   const [amount, setAmount] = useState(0);
   const [lastDate, setLastDate] = useState("");
@@ -46,6 +47,8 @@ const Add = ({ setIsAdding }: AddProps) => {
         showConfirmButton: false,
         timer: 1500,
       });
+      getExpenses()
+      setIsAdding(false)
     })
   };
 
