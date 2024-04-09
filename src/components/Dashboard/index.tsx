@@ -6,8 +6,7 @@ import Table from './Table';
 import Add from './Add';
 import Edit from './Edit';
 
-import { collection, getDocs, Timestamp } from 'firebase/firestore';
-import { db } from '../../config/firestore'
+import { getExpenseHandle } from '../../config/firestore'
 import { Expense } from './types';
 
 
@@ -23,9 +22,13 @@ const Dashboard = ({ setIsAuthenticated }: { setIsAuthenticated: (value: boolean
     setExpenses(expenses)
   }
 
+  const handleSetIsAdding = (value:boolean) => {
+    console.log(value)
+    setIsAdding(value)
+  }
+
   const getExpenses = async () => {
-    const expenseSnapshot = await getDocs(collection(db, "expense_jan_2024"));
-    const expenses = expenseSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Expense);
+    const expenses = await getExpenseHandle("expense_jan_2024")
     setExpenses(expenses)
   }
 
@@ -75,7 +78,7 @@ const Dashboard = ({ setIsAuthenticated }: { setIsAuthenticated: (value: boolean
       {!isAdding && !isEditing && (
         <>
           <Header
-            setIsAdding={setIsAdding}
+            setIsAdding={handleSetIsAdding}
             setIsAuthenticated={setIsAuthenticated}
           />
           <Table
@@ -87,9 +90,7 @@ const Dashboard = ({ setIsAuthenticated }: { setIsAuthenticated: (value: boolean
       )}
       {isAdding && (
         <Add
-          expenses={expenses}
-          setExpenses={setExpenses}
-          setIsAdding={setIsAdding}
+          setIsAdding={handleSetIsAdding}
         />
       )}
       {isEditing && (

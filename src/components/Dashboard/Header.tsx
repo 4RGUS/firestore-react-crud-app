@@ -8,11 +8,14 @@ type HeaderProp = {
 }
 
 const Header = ({ setIsAdding, setIsAuthenticated }:HeaderProp) => {
+  const handleAddExpense = () => {
+    setIsAdding(true);
+  }
   return (
     <header>
       <h1>Expense Tracker</h1>
       <div style={{ marginTop: '30px', marginBottom: '18px' }}>
-        <button onClick={() => setIsAdding(true)}>Add Expense</button>
+        <button onClick={handleAddExpense}>Add Expense</button>
         <Logout setIsAuthenticated={setIsAuthenticated} />
       </div>
     </header>

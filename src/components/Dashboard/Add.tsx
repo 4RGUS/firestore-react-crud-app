@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import Swal from 'sweetalert2';
+import { Expense } from './types';
+import { formatDate } from '../../utils/formatDate';
+import { Timestamp } from 'firebase/firestore';
+import { setDocHandle } from '../../config/firestore';
+import { COLLECTION_NAME } from '../../constants';
 
-const Add = ({ expenses, setExpenses, setIsAdding }) => {
-  const [firstName, setFirstName] = useState('');
+type AddProps = {
+  setIsAdding: (value: boolean) => void;
+}
+
+const Add = ({ setIsAdding }: AddProps) => {
   const [expenseName, setExpenseName] = useState('');
   const [amount, setAmount] = useState(0);
   const [lastDate, setLastDate] = useState("");
@@ -10,45 +18,35 @@ const Add = ({ expenses, setExpenses, setIsAdding }) => {
   const [paidDate, setPaidDate] = useState("");
   const [remarks, setRemarks] = useState("");
 
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [salary, setSalary] = useState('');
-  const [date, setDate] = useState('');
+  const handleAdd = (e: any) => {
+    e.preventDefault();
+    if (!expenseName || !amount || !lastDate || !paidAmount || !paidDate || !remarks) {
+      return Swal.fire({
+        icon: 'error',
+        title: 'Error!',
+        text: 'All fields are required.',
+        showConfirmButton: true,
+      });
+    }
 
-  const handleAdd = e => {
-    // e.preventDefault();
+    const newExpense: Omit<Expense, 'id'> = {
+      expense_name: expenseName,
+      amount,
+      amount_paid: paidAmount,
+      last_date: Timestamp.fromDate(new Date(lastDate)),
+      paid_date: Timestamp.fromDate(new Date(paidDate)),
+      remarks
+    }
 
-    // if (!firstName || !lastName || !email || !salary || !date) {
-    //   return Swal.fire({
-    //     icon: 'error',
-    //     title: 'Error!',
-    //     text: 'All fields are required.',
-    //     showConfirmButton: true,
-    //   });
-    // }
-
-    // const newEmployee = {
-    //   firstName,
-    //   lastName,
-    //   email,
-    //   salary,
-    //   date,
-    // };
-
-    // employees.push(newEmployee);
-
-    // // TODO: Add doc to DB
-
-    // setEmployees(employees);
-    // setIsAdding(false);
-
-    // Swal.fire({
-    //   icon: 'success',
-    //   title: 'Added!',
-    //   text: `${firstName} ${lastName}'s data has been Added.`,
-    //   showConfirmButton: false,
-    //   timer: 1500,
-    // });
+    setDocHandle(COLLECTION_NAME, newExpense).then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Added!',
+        text: `${expenseName} has been Added.`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    })
   };
 
   return (
@@ -69,7 +67,7 @@ const Add = ({ expenses, setExpenses, setIsAdding }) => {
           type="number"
           name="amount"
           value={amount}
-          onChange={e => setAmount(e.target.value)}
+          onChange={e => setAmount(parseFloat(e.target.value))}
         />
         <label htmlFor="lastDate">Last Date</label>
         <input
@@ -85,7 +83,7 @@ const Add = ({ expenses, setExpenses, setIsAdding }) => {
           type="number"
           name="paidAmount"
           value={paidAmount}
-          onChange={e => setPaidAmount(e.target.value)}
+          onChange={e => setPaidAmount(parseFloat(e.target.value))}
         />
         <label htmlFor="paidDate">Paid Date</label>
         <input
@@ -104,7 +102,7 @@ const Add = ({ expenses, setExpenses, setIsAdding }) => {
           onChange={e => setRemarks(e.target.value)}
         />
         <div style={{ marginTop: '30px' }}>
-          <input type="submit" value="Add" />
+          <input onClick={handleAdd} type="submit" value="Add" />
           <input
             style={{ marginLeft: '12px' }}
             className="muted-button"
