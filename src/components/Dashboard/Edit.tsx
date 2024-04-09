@@ -3,17 +3,18 @@ import Swal from 'sweetalert2';
 import { Expense } from './types';
 import { createTimeStamp, formatDate } from '../../utils/formatDate';
 import { Timestamp } from 'firebase/firestore';
+import { editExpenseHandle } from '../../config/firestore';
+import { COLLECTION_NAME } from '../../constants';
 
 type EditProps = {
-  expenses: Expense[]|undefined,
   selectedExpense: Expense | undefined,
-  setExpenses: (expense:Expense[]|undefined) => void;
   setIsEditing: (value: boolean) => void;
+  getExpenses: () => Promise<void>
 }
 
-const Edit = ({ expenses, selectedExpense, setExpenses, setIsEditing }:EditProps) => {
+const Edit = ({ selectedExpense, setIsEditing, getExpenses }: EditProps) => {
   const id = selectedExpense?.id ?? "00";
-
+  console.log(selectedExpense)
   const [expenseName, setExpenseName] = useState(selectedExpense?.expense_name);
   const [amount, setAmount] = useState(selectedExpense?.amount);
   const [lastDate, setLastDate] = useState(selectedExpense?.last_date);
@@ -21,7 +22,7 @@ const Edit = ({ expenses, selectedExpense, setExpenses, setIsEditing }:EditProps
   const [paidAmount, setPaidAmount] = useState(selectedExpense?.amount_paid);
   const [remarks, setRemarks] = useState(selectedExpense?.remarks);
 
-  const handleUpdate = (e:any) => {
+  const handleUpdate = (e: any) => {
     e.preventDefault();
 
     if (!expenseName || !amount || !lastDate || !paidDate || !paidAmount) {
@@ -33,31 +34,30 @@ const Edit = ({ expenses, selectedExpense, setExpenses, setIsEditing }:EditProps
       });
     }
 
-    const expense: Expense = {
-      id,
-      expense_name: expenseName,
-      amount: amount,
-      amount_paid: paidAmount,
-      last_date: lastDate,
-      paid_date: paidDate,
-      remarks: remarks ?? ""
+    if (selectedExpense) {
+
+      const expense: Expense = {
+        id: selectedExpense?.id,
+        expense_name: expenseName,
+        amount: amount,
+        amount_paid: paidAmount,
+        last_date: lastDate,
+        paid_date: paidDate,
+        remarks: remarks ?? ""
+      }
+
+      // TODO: Update document
+      editExpenseHandle(COLLECTION_NAME, selectedExpense.id,expense)
+      setIsEditing(false);
+      getExpenses();
+      Swal.fire({
+        icon: 'success',
+        title: 'Updated!',
+        text: `"${expense.expense_name}" expense has been updated.`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
     }
-
-    expenses?.push(expense)
-
-    // TODO: Update document
-
-    setExpenses(expenses);
-    setIsEditing(false);
-
-    Swal.fire({
-      icon: 'success',
-      title: 'Updated!',
-      text: `"${expense.expense_name}" expense has been updated.`,
-      showConfirmButton: false,
-      timer: 1500,
-    });
-
   };
 
   return (
@@ -85,7 +85,7 @@ const Edit = ({ expenses, selectedExpense, setExpenses, setIsEditing }:EditProps
           id="lastDate"
           type="date"
           name="lastDate"
-          value={formatDate(lastDate??createTimeStamp(new Date()))}
+          value={formatDate(lastDate ?? createTimeStamp(new Date()))}
           onChange={e => setLastDate(createTimeStamp(e.target.value))}
         />
         <label htmlFor="paidAmount">Paid amount(₹)</label>
@@ -101,7 +101,7 @@ const Edit = ({ expenses, selectedExpense, setExpenses, setIsEditing }:EditProps
           id="paidDate"
           type="date"
           name="paidDate"
-          value={formatDate(paidDate??createTimeStamp(new Date()))}
+          value={formatDate(paidDate ?? createTimeStamp(new Date()))}
           onChange={e => setPaidDate(createTimeStamp(e.target.value))}
         />
         <label htmlFor="paidDate">Remarks</label>

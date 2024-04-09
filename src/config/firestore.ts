@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {getFirestore, doc, deleteDoc, getDocs, collection, addDoc} from 'firebase/firestore'
+import {getFirestore, doc, deleteDoc, getDocs, collection, addDoc, setDoc} from 'firebase/firestore'
 import { Expense } from "../components/Dashboard/types";
 
 
@@ -31,4 +31,8 @@ export const getExpenseHandle = async(collectionName:string) => {
 
 export const deleteExpenseHandle = async(collectionName: string, docId:string) => {
     await deleteDoc(doc(db, collectionName, docId));
+}
+
+export const editExpenseHandle = async(collectionName: string, docId:string, data: Expense ) => {
+    await setDoc(doc(db, collectionName, docId), data);
 }

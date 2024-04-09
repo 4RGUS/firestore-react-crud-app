@@ -34,7 +34,6 @@ const Dashboard = ({ setIsAuthenticated }: { setIsAuthenticated: (value: boolean
   }
 
   useEffect(() => {
-    // TODO: create getEmployees function and call it here
     getExpenses();
   }, []);
 
@@ -97,10 +96,9 @@ const Dashboard = ({ setIsAuthenticated }: { setIsAuthenticated: (value: boolean
       )}
       {isEditing && (
         <Edit
-          expenses={expenses}
           selectedExpense={selectedExpense}
-          setExpenses={handleSetExpenses}
           setIsEditing={setIsEditing}
+          getExpenses={getExpenses}
         />
       )}
     </div>
